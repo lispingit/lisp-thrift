@@ -1,0 +1,17 @@
+#!/usr/bin/env /usr/local/bin/sbcl --noinform --script
+
+(require :asdf)
+(let ((submodule-asd-path (truename (merge-pathnames "../deps/lisp/asd" *load-truename*))))
+  (push submodule-asd-path asdf:*central-registry*))
+
+(unless (= 3 (length sb-ext:*posix-argv*))
+  (format t "usage: thriftjson idl_file thrift_binary~%")
+  (quit :unix-status 1))
+
+(let ((*default-pathname-defaults* (truename (merge-pathnames "../lisp" *load-truename*))))
+  (load "thrift/thrift"))
+
+(let ((idl-file (second sb-ext:*posix-argv*))
+      (bin-file (third sb-ext:*posix-argv*)))
+  (thrift:thriftjson idl-file bin-file))
+(terpri)
